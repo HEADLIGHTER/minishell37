@@ -66,7 +66,7 @@ int	check_input(char *input)
 	return (0);
 }
 
-void	start_exec(t_shell **sh, char *input)
+void	start_exec(t_shell *sh, char *input)
 {
 	sh->cmd = NULL;
 	sh->line = input;
@@ -98,7 +98,7 @@ int	main(int ac, char **av, char **envp)
 		if (check_input(input) != 0)
 			error_input();
 		else
-			start_exec(&sh, input);
+			start_exec(sh, input);
 		free_end(&sh, input);
 	}
 }
