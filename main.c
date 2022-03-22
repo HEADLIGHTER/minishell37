@@ -38,6 +38,118 @@ int	print_free(t_shell **sh)
 // ------- FREE PART -------
 
 // ------- EXEC PART -------
+
+// *** freee ***
+void	close_fd_all(t_cmd **cmdl)
+{
+	t_cmd	*cur;
+
+	cur = *cmdl;
+	while (cur)
+	{
+		if (cur->fd_copy_in != 0)
+			close(cur->fd_copy_in);
+		if (cur->fd_copy_out != 1)
+			close(cur->fd_copy_out);
+		cur = cur->next;
+	}
+}
+
+void	free_fd_mall_error(t_commande_line **first)
+{
+	close_fd_all(first);
+	exit (50);
+}
+
+void	free_str_fd_env_pid(t_commande_line **cmd, pid_t *pid, char **str)
+{
+	free_all(cmd);
+	//clean_env();
+	free(pid);
+	free(str);
+	exit(1);
+}
+
+void	free_str_fd_malloc_error(char **str, t_commande_line **first)
+{
+	free(str);
+	close_fd_all(first);
+	exit (50);
+}
+
+void	free_file_name(char *file_name)
+{
+	if (file_name != NULL)
+	{
+		unlink(file_name);
+		free(file_name);
+	}
+}
+
+void	free_str_fd_all_env_pid(t_commande_line **cmd, pid_t *pid, char **str)
+{
+	free_all(cmd);
+	//ft_clean_env();
+	free(pid);
+	free(str);
+	exit(1);
+}
+// *** freee ***
+// *** utils ***
+int		ft_lstsize(t_list *lst)
+{
+	int		size;
+
+	size = 0;
+	while (lst)
+	{
+		++size;
+		lst = lst->next;
+	}
+	return (size);
+}
+
+static char **create_argv(t_list *tkn)
+{
+	size_t  i;
+	size_t  len;
+	char    **argv;
+
+	len = ft_lstsize(tkn);
+	if (!(argv = malloc(sizeof(*argv) * (len + 1))))
+	{
+		printf("mini$hell37: malloc: %s\n", strerror(errno));
+		return (NULL);
+	}
+	i = 0;
+	while (i < len + 1 && tkn)
+	{
+		if (!(argv[i] = ft_strdup(tkn->content)))
+			break ;
+		tkn = tkn->next;
+		++i;
+	}
+	argv[i] = NULL;
+	return (argv);
+}
+
+void	fill_argv(t_cmd *cmd)
+{
+
+	while (cmd)
+	{
+		cmd->argv = create_argv(cmd->token);
+		cmd = cmd->next;
+	}
+}
+
+t_env	**get_address_env(void)
+{
+	static t_env	*new = NULL;
+
+	return (&new);
+}
+// *** utils ***
 void sig_cmd2(int sig)
 {
 	exit_status = sig;
@@ -49,6 +161,7 @@ void sig_cmd2(int sig)
 		rl_redisplay();
 	}
 }
+
 int len_cmd(t_cmd *cmd)
 {
 	int	i;
@@ -121,24 +234,126 @@ int open_fd(t_cmd *cmd) //!!!!!!!!!!!
 
 	curr = cmd->token;
 }
+
 // *** fdes ***
+// *** exist ***
+char	*write_bad_cmd_free(char *str)
+{
+	write(2, "minishell: ", 11);
+	write(2, str, ft_strlen(str));
+	write(2, ": command not found\n", 20);
+	free(str);
+	return (NULL);
+}
+char	*get_acces(char *str, char *path)
+{
+	char	*back_slash;
+	char	*new;
+
+	back_slash = ft_strjoin(path, "/");
+	if (back_slash == NULL)
+		return (NULL);
+	new = ft_strjoin(back_slash, str);
+	free(back_slash);
+	if (new == NULL)
+		return (NULL);
+	return (new);
+}
+int	try_acces(char *str, char *path)
+{
+	char	*try;
+
+	try = get_acces(str, path);
+	if (try == NULL)
+		return (2);
+	if (access(try, X_OK) == 0)
+	{
+		free(try);
+		return (1);
+	}
+	free(try);
+	return (0);
+}
+
+void	free_split(char **split)
+{
+	int	i;
+
+	i = 0;
+	if (split)
+	{
+		while (split[i])
+		{
+			free(split[i]);
+			i++;
+		}
+	}
+	if (split)
+		free(split);
+}
+
+char	*free_split_ret_null(char **split_path)
+{
+	free_split(split_path);
+	return (NULL);
+}
+
+char	*write_bad_cmd_free_split(char *str, char **split_path)
+{
+	free_split(split_path);
+	write(2, "minishell: ", 11);
+	write(2, str, ft_strlen(str));
+	write(2, ": command not found\n", 20);
+	free(str);
+	return (NULL);
+}
+
+char	*get_bin_argv0(char *str, char *path, int i)
+{
+	int		ret;
+	char	**split_path;
+	char	*try;
+
+	if (str && (str[0] == '.' || str[0] == '/'))
+		return (str);
+	split_path = ft_split(path, ':');
+	if (split_path == NULL)
+		return (write_bad_cmd_free(str));
+	while (split_path[i] && str[0] != '\0')
+	{
+		ret = try_acces(str, split_path[i]);
+		if (ret == 1)
+		{
+			try = get_acces(str, split_path[i]);
+			free_split(split_path);
+			return (try);
+		}
+		if (ret == 2)
+			return (free_split_ret_null(split_path));
+		i++;
+	}
+	write_bad_cmd_free_split(str, split_path);
+	exit_status = 127;
+	return (str);
+}
+// *** exist ***
 int is_builtin(char *cmd)
 {
 	if (cmd == NULL)
 		return (0);
-	if (ft_strncmp("exit", cmd))
+	if (!ft_strncmp("exit", cmd, 5))
 		return (2);
-	if (ft_strncmp("cd", cmd))
+	if (!ft_strncmp("cd", cmd, 3))
 		return (1);
-	else if (ft_strncmp("echo", cmd))
+	else if (!ft_strncmp("echo", cmd, 5))
 		return (1);
-	else if (ft_strncmp("env", cmd))
+	else if (!ft_strncmp("env", cmd, 4))
 		return (1);
-	else if (ft_strncmp("pwd", cmd))
+	else if (!ft_strncmp("pwd", cmd, 4))
 		return (1);
-	else if (ft_strncmp("export", cmd))
+	else if (!ft_strncmp("export", cmd, 7))
 		return (1);
-	else if (ft_strncmp("unset", cmd))
+	else if (!ft_strncmp("unset", cmd, 6))
 		return (1);
 	return (0);
 }
@@ -179,6 +394,40 @@ int no_forking(t_cmd *cmd, pid_t pid_t)
 	return (0);
 }
 
+char	**env_to_tab(t_env **envp)
+{
+	char	**new;
+	t_env	*cur;
+	int		i;
+
+	i = 0;
+	cur = *envp;
+	while (cur)
+	{
+		cur = cur->next;
+		i++;
+	}
+	new = malloc(sizeof(char *) * (i + 1));
+	new[i] = NULL;
+	cur = *envp;
+	i = 0;
+	while (cur)
+	{
+		new[i] = cur->key;
+		i++;
+		cur = cur->next;
+	}
+	return (new);
+}
+
+char	*ft_get_env(char *str)
+{
+	t_env	**env_list;
+
+	env_list = get_address_env();
+	return (NULL);
+}
+
 int execve_fct(t_cmd *curr, t_cmd *first, pid_t *pid)
 {
 	char **str;
@@ -188,15 +437,23 @@ int execve_fct(t_cmd *curr, t_cmd *first, pid_t *pid)
 	close_fd_all(first);
 	str = env_to_tab(get_address_env());
 	if (str == NULL)
-		//free_fd_mall_error(first);
-	if (is_builtin(curr->argv[0]) == 0)
-	{
-		if (curr->argv[0] = NULL)
-			free_str_fd_env_pid(first, pid, str);
-		curr->argv[0] = get_bin_argv_zero(curr->argv[0], ft_get_env("PATH"), 0);
-	}
-	if (cmd->argv[0] == NULL)
-		free_str_fd_mall_error
+		free_fd_mall_error(first);
+		if (is_builtin(curr->argv[0]) == 0)
+		{
+			if (curr->argv[0] == NULL)
+				free_str_fd_env_pid(first, pid, str);
+			curr->argv[0] = get_bin_argv0(curr->argv[0], ft_get_env("PATH") ,0);
+		}
+	if (curr->argv[0] == NULL)
+		free_str_fd_malloc_error(str, first);
+	free_file_name((*curr)->name_file);
+	if ((*curr)->fd_copy_in < 0 || (*curr)->fd_copy_out < 0)
+		free_str_fd_all_env_pid(first, pid, str);
+	if (is_builtin((*curr)->argv[0]))
+		handle_builtin(); //!!
+	else
+		exec_cmd();
+	return (0);
 }
 
 int multifork(pid_t *pid, int i, t_cmd *cmd, t_cmd *curr)
@@ -219,7 +476,7 @@ int multifork(pid_t *pid, int i, t_cmd *cmd, t_cmd *curr)
 	return (0);
 }
 
-int forking(t_cmd *cmd, pid_t *pid)
+int forking(t_cmd *cmd, pid_t *pid, char **av)
 {
 	int len;
 	int i;
@@ -247,7 +504,7 @@ int forking(t_cmd *cmd, pid_t *pid)
 	return (0);
 }
 
-int w_pid(t_cmd *cmd, pid_t *pid)
+int w_pid(t_cmd *cmd, pid_t *pid, char **av)
 {
 	t_cmd	*curr;
 	int 	len;
@@ -256,7 +513,7 @@ int w_pid(t_cmd *cmd, pid_t *pid)
 	i = 0;
 	curr = *cmd;
 	len = len_cmd(curr);
-	if (len == 1 && is_builtin(*cmd->argv[0]))
+	if (len == 1 && is_builtin(av[0]))
 	{
 		return (0);
 	}
@@ -272,23 +529,24 @@ int w_pid(t_cmd *cmd, pid_t *pid)
 	return (0);
 }
 
-int executor(t_cmd *cmd, t_shell *sh)
+int executor(t_cmd *cmd)
 {
 	t_cmd	*curr;
 	pid_t	*pid;
 	int 	ret;
 
-	cur = *sh;
+	curr = *cmd;
+	fill_argv(cmd);
 	ret = open_pipe(cmd);
 	if (ret)
 		return (ret);
 	pid = malloc(sizeof(pid_t) * len_cmd(curr));
 	if (pid == NULL)
 		return (1);
-	forking(cmd, pid);
+	forking(cmd, pid, av);
 	signal(SIGINT, sig_cmd2);
 	signal(SIGQUIT, SIG_IGN);
-	w_pid(cmd, pid);
+	w_pid(cmd, pid, av);
 	signal(SIGINT, signal_cmd2);
 	signal(SIGQUIT, SIG_IGN);
 	free(pid);

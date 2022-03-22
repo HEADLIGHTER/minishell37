@@ -27,7 +27,7 @@
 
 typedef struct      s_cmd
 {
-	char 			argv[][]; //!!!!!!!!!
+	char 			**argv;
 	t_list          *token;
 	t_list          *file_in;
 	t_list          *file_out;

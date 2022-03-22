@@ -2,7 +2,7 @@
 int main()
 {
 	int i = 0;
-	char *str = "minishell: syntax error near unexpected token '|'\n";
+	char *str = ": command not found\n";
 	while (str[i])
 		i++;
 	printf("%d\n", i);
