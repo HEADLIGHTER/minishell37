@@ -55,13 +55,13 @@ void	close_fd_all(t_cmd **cmdl)
 	}
 }
 
-void	free_fd_mall_error(t_commande_line **first)
+void	free_fd_mall_error(t_cmd **first)
 {
 	close_fd_all(first);
-	exit (50);
+	exit (1);
 }
 
-void	free_str_fd_env_pid(t_commande_line **cmd, pid_t *pid, char **str)
+void	free_str_fd_env_pid(t_cmd **cmd, pid_t *pid, char **str)
 {
 	free_all(cmd);
 	//clean_env();
@@ -70,11 +70,11 @@ void	free_str_fd_env_pid(t_commande_line **cmd, pid_t *pid, char **str)
 	exit(1);
 }
 
-void	free_str_fd_malloc_error(char **str, t_commande_line **first)
+void	free_str_fd_malloc_error(char **str, t_cmd **first)
 {
 	free(str);
 	close_fd_all(first);
-	exit (50);
+	exit (1);
 }
 
 void	free_file_name(char *file_name)
@@ -86,7 +86,7 @@ void	free_file_name(char *file_name)
 	}
 }
 
-void	free_str_fd_all_env_pid(t_commande_line **cmd, pid_t *pid, char **str)
+void	free_str_fd_all_env_pid(t_cmd **cmd, pid_t *pid, char **str)
 {
 	free_all(cmd);
 	//ft_clean_env();
