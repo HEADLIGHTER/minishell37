@@ -133,13 +133,15 @@ static char **create_argv(t_list *tkn)
 	return (argv);
 }
 
-void	fill_argv(t_cmd *cmd)
+void	fill_argv(t_cmd **cmd)
 {
+	t_cmd *tmp;
+	tmp = *cmd;
 
-	while (cmd)
+	while (tmp)
 	{
-		cmd->argv = create_argv(cmd->token);
-		cmd = cmd->next;
+		tmp->argv = create_argv(tmp->token);
+		tmp = tmp->next;
 	}
 }
 
@@ -198,7 +200,7 @@ int init_pipe(int i, int **numfd, t_cmd *curr)
 	return (0);
 }
 
-int open_pipe(t_cmd *cmd)
+int open_pipe(t_cmd **cmd)
 {
 	t_cmd	*curr;
 	int 	**numfd;
@@ -206,11 +208,11 @@ int open_pipe(t_cmd *cmd)
 	int 	ret;
 
 	i = 0;
-	curr =cmd;
+	curr = *cmd;
 	numfd = malloc(sizeof(int *) * (len_cmd(curr) + 1));
 	if (numfd == NULL)
 		return (1);
-	numfd[len_cmd(curr)] == NULL;
+	numfd[len_cmd(curr)] = NULL;
 	while (curr)
 	{
 		ret = init_pipe(i, numfd, curr);
@@ -230,9 +232,7 @@ int open_pipe(t_cmd *cmd)
 // *** fdes ***
 int open_fd(t_cmd *cmd) //!!!!!!!!!!!
 {
-	t_list 	*curr;
-
-	curr = cmd->token;
+	return (1);
 }
 
 // *** fdes ***
@@ -308,7 +308,7 @@ char	*write_bad_cmd_free_split(char *str, char **split_path)
 	return (NULL);
 }
 
-char	*get_bin_argv0(char *str, char *path, int i)
+char	*get_bin(char *str, char *path, int i)
 {
 	int		ret;
 	char	**split_path;
@@ -358,11 +358,11 @@ int is_builtin(char *cmd)
 	return (0);
 }
 
-int exec_bi_fd(char *cmd, char **args, t_cmd *first, pid_t *pid)
+int exec_bi_fd(char *cmd, char **args, t_cmd **first, pid_t *pid)
 {
 	if (cmd == NULL)
 		return (0);
-	if (ft_strncmp("exit", cmd))
+	if (ft_strncmp("exit", cmd, 5))
 	{
 		//exit_builtin();
 		printf("ready to exit\n");
@@ -380,16 +380,16 @@ int exec_bi_fd(char *cmd, char **args, t_cmd *first, pid_t *pid)
 		builtin_export_fd();
 	else if (ft_strncmp("unset", cmd))
 		builtin_unset();*/
-	if (ft_strncmp("builtin", cmd))
+	if (ft_strncmp("builtin", cmd, 8))
 		printf("ready to builtin_fd\n");
 	return (0);
 }
 
-int no_forking(t_cmd *cmd, pid_t pid_t)
+int no_forking(t_cmd **cmd, pid_t *pid)
 {
-	if (cmd->argv == NULL)
+	if ((*cmd)->argv == NULL)
 		return (0);
-	else if (exec_bi_fd(cmd->argv[0], cmd->argv, cmd, pid) != 0)
+	else if (exec_bi_fd((*cmd)->argv[0], (*cmd)->argv, cmd, pid) != 0)
 		return (0);
 	return (0);
 }
@@ -427,36 +427,43 @@ char	*ft_get_env(char *str)
 	env_list = get_address_env();
 	return (NULL);
 }
-
-int execve_fct(t_cmd *curr, t_cmd *first, pid_t *pid)
+void exec_builtin(void)
+{
+	printf("Ready to builtin\n");
+}
+void exec_cmd(void)
+{
+	printf("Ready to execve\n");
+}
+int execve_fct(t_cmd **curr, t_cmd **first, pid_t *pid)
 {
 	char **str;
 
-	dup2(curr->fd_copy_in, STDIN_FILENO);
-	dup2(curr->fd_copy_out, STDOUT_FILENO);
+	dup2((*curr)->fd_copy_in, STDIN_FILENO);
+	dup2((*curr)->fd_copy_out, STDOUT_FILENO);
 	close_fd_all(first);
 	str = env_to_tab(get_address_env());
 	if (str == NULL)
 		free_fd_mall_error(first);
-		if (is_builtin(curr->argv[0]) == 0)
+		if (is_builtin((*curr)->argv[0]) == 0)
 		{
-			if (curr->argv[0] == NULL)
+			if ((*curr)->argv[0] == NULL)
 				free_str_fd_env_pid(first, pid, str);
-			curr->argv[0] = get_bin_argv0(curr->argv[0], ft_get_env("PATH") ,0);
+			(*curr)->argv[0] = get_bin((*curr)->argv[0], ft_get_env("PATH") ,0);
 		}
-	if (curr->argv[0] == NULL)
+	if ((*curr)->argv[0] == NULL)
 		free_str_fd_malloc_error(str, first);
 	free_file_name((*curr)->name_file);
 	if ((*curr)->fd_copy_in < 0 || (*curr)->fd_copy_out < 0)
 		free_str_fd_all_env_pid(first, pid, str);
 	if (is_builtin((*curr)->argv[0]))
-		handle_builtin(); //!!
+		exec_builtin(); //!!
 	else
 		exec_cmd();
 	return (0);
 }
 
-int multifork(pid_t *pid, int i, t_cmd *cmd, t_cmd *curr)
+int multifork(pid_t *pid, int i, t_cmd **cmd, t_cmd **curr)
 {
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
@@ -469,18 +476,18 @@ int multifork(pid_t *pid, int i, t_cmd *cmd, t_cmd *curr)
 		signal(SIGQUIT, SIG_DFL);
 		execve_fct(curr, cmd, pid);
 	}
-	if (curr->fd_copy_in != 0)
-		close(curr->fd_copy_in);
-	if (curr->fd_copy_out != 0)
-		close(curr->fd_copy_out);
+	if ((*curr)->fd_copy_in != 0)
+		close((*curr)->fd_copy_in);
+	if ((*curr)->fd_copy_out != 0)
+		close((*curr)->fd_copy_out);
 	return (0);
 }
 
-int forking(t_cmd *cmd, pid_t *pid, char **av)
+int forking(t_cmd **cmd, pid_t *pid)
 {
 	int len;
 	int i;
-	t_cmd curr;
+	t_cmd *curr;
 
 	i = 0;
 	curr = *cmd;
@@ -504,7 +511,7 @@ int forking(t_cmd *cmd, pid_t *pid, char **av)
 	return (0);
 }
 
-int w_pid(t_cmd *cmd, pid_t *pid, char **av)
+int w_pid(t_cmd **cmd, pid_t *pid)
 {
 	t_cmd	*curr;
 	int 	len;
@@ -513,7 +520,7 @@ int w_pid(t_cmd *cmd, pid_t *pid, char **av)
 	i = 0;
 	curr = *cmd;
 	len = len_cmd(curr);
-	if (len == 1 && is_builtin(av[0]))
+	if (len == 1 && is_builtin((*cmd)->argv[0]))
 	{
 		return (0);
 	}
@@ -529,7 +536,7 @@ int w_pid(t_cmd *cmd, pid_t *pid, char **av)
 	return (0);
 }
 
-int executor(t_cmd *cmd)
+int executor(t_cmd **cmd)
 {
 	t_cmd	*curr;
 	pid_t	*pid;
@@ -543,11 +550,11 @@ int executor(t_cmd *cmd)
 	pid = malloc(sizeof(pid_t) * len_cmd(curr));
 	if (pid == NULL)
 		return (1);
-	forking(cmd, pid, av);
+	forking(cmd, pid);
 	signal(SIGINT, sig_cmd2);
 	signal(SIGQUIT, SIG_IGN);
-	w_pid(cmd, pid, av);
-	signal(SIGINT, signal_cmd2);
+	w_pid(cmd, pid);
+	signal(SIGINT, sig_cmd2);
 	signal(SIGQUIT, SIG_IGN);
 	free(pid);
 	return (0);
@@ -610,8 +617,8 @@ void	start_exec(t_shell *sh, char *input)
 	sh->line = input;
 	sh->cmd = parsing(sh->line, sh->env, &sh->last_exit);
 	printf("%s\n", sh->line);
-	if (input != NULL && *sh != NULL)
-		ret = executor(sh->cmd);
+	if (input != NULL && sh != NULL)
+		ret = executor(&sh->cmd);
 }
 
 int	main(int ac, char **av, char **envp)

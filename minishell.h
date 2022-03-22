@@ -28,6 +28,7 @@
 typedef struct      s_cmd
 {
 	char 			**argv;
+	char 			*name_file;
 	t_list          *token;
 	t_list          *file_in;
 	t_list          *file_out;
