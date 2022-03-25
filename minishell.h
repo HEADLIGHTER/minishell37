@@ -4,13 +4,14 @@
 #include "libft/libft.h"
 #include <stdio.h>
 #include <unistd.h>
-#include <errno.h>
+#include <sys/errno.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 //# define PRINT_ERROR_FD 2
 //# define DOUBLE_QUOTE 34 //""

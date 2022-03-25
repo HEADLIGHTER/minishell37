@@ -2,7 +2,7 @@
 int main()
 {
 	int i = 0;
-	char *str = ": command not found\n";
+	char *str = "mini$hell37: execve: ";
 	while (str[i])
 		i++;
 	printf("%d\n", i);

@@ -4,7 +4,7 @@ CC = gcc
 CC_F = -Wall -Wextra
 
 LIBFT = ./libft/
-READLINE = -lreadline -L /usr/local/opt/readline/lib
+READLINE = -lreadline -L/usr/local/opt/readline/lib -I/usr/local/opt/readline/include
 HEADER = minishell.h
 
 SRCS = main.c cmd.c signal.c utils.c parser_special_char.c dollar.c clean.c envp.c parsing.c
