@@ -63,12 +63,12 @@ int    free_all(t_shell *sh)
 	return (1);
 }
 
-void	free_end(t_shell *sh, char *input)
+/*void	free_end(t_shell *sh, char *input)
 {
 	if (input)
 		free(input);
 	free_all(sh);
-}
+}*/
 
 int	print_free(t_shell *sh)
 {
@@ -151,7 +151,7 @@ void    sig_child(int sig)
 	{
 		kill(pid, sig);
 		if (sig == SIGQUIT)
-			ft_putstr_fd("Quitter (core dumped)\n", 1);
+			ft_putstr_fd("Quit (core dumped)\n", 1);
 		else if (sig == SIGINT || sig == SIGQUIT)
 			ft_putstr_fd("\n", 1);
 		pid = 0;
@@ -559,8 +559,7 @@ static int  handle_logic(t_list *tkn, t_env *env, t_env **new)
 	else
 	{
 		i = find_char(tkn->content, '=');
-		tmp = env_new(ft_substr(tkn->content, 0, i), ft_substr(
-				tkn->content, i + 1, ft_strlen(tkn->content + i + 1)), 0);
+		tmp = env_new(ft_substr(tkn->content, 0, i), ft_substr(tkn->content, i + 1, ft_strlen(tkn->content + i + 1)), 0);
 		env_add_back(new, tmp);
 	}
 	return (0);
@@ -598,6 +597,8 @@ void executor(t_cmd *cmd, t_shell *sh)
 	char        *path;
 	struct stat buf;
 
+	write(1, sh->env->value, ft_strlen(sh->env->value));
+	write(1, "\n", 1);
 	while (cmd)
 	{
 		if (cmd->token && is_var_declaration(cmd->token->content))
@@ -706,6 +707,6 @@ int	main(int ac, char **av, char **envp)
 			error_input();
 		else
 			start_exec(sh, input);
-		free_end(sh, input);
+		//free_end(sh, input);
 	}
 }
