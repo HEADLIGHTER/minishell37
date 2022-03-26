@@ -166,10 +166,12 @@ void    sig_main(int sig)
 
 	(void)sig;
 	sh = get_shell(PULL);
-	ft_putstr_fd("^C\n", 1);
+	ft_putstr_fd("", 0);
 	signal(SIGINT, sig_main);
 	free(sh->line);
 	sh->line = NULL;
+	rl_on_new_line();
+	rl_redisplay();
 }
 
 void    sig_quit(int sig)
@@ -179,7 +181,7 @@ void    sig_quit(int sig)
 }
 
 // *** pipe ***
-void    set_read_write_pipe(t_cmd *cmd)
+int    set_read_write_pipe(t_cmd *cmd)
 {
 	if (cmd->std_in != PIPE || cmd->std_out != STDOUT_FILENO)
 	{
@@ -193,6 +195,7 @@ void    set_read_write_pipe(t_cmd *cmd)
 		close(cmd->p_in[0]);
 		close(cmd->p_in[1]);
 	}
+	return (0);
 }
 
 void    set_builtin_pipe(t_cmd *cmd)
@@ -257,11 +260,11 @@ void        set_redirect_fd(t_cmd *cmd, int std_fd)
 	{
 		if ((fd = open_file(cmd, file, std_fd)) == -1)
 		{
-			write(2, "mini$hell37: ", 13);
-			write(2, (char *)file->content, ft_strlen((char *)file->content));
-			write(2, " ", 1);
-			write(2, strerror(errno), ft_strlen(strerror(errno)));
-			write(2, "\n", 1);
+			write(1, "mini$hell37: ", 13);
+			write(1, (char *)file->content, ft_strlen((char *)file->content));
+			write(1, " ", 1);
+			write(1, strerror(errno), ft_strlen(strerror(errno)));
+			write(1, "\n", 1);
 			cmd->std_in = -1;
 			return ;
 		}
@@ -452,13 +455,19 @@ static void parent_code(t_shell *sh, t_cmd *cmd, pid_t pid)
 	signal(SIGINT, sig_child);
 	signal(SIGQUIT, sig_child);
 	waitpid(pid, &sh->last_exit, 0);
+	if (WIFEXITED(sh->last_exit))
+		sh->last_exit = WEXITSTATUS(sh->last_exit);
+	else if(WIFSIGNALED(sh->last_exit))
+		sh->last_exit = 128 + WTERMSIG(sh->last_exit);
 	signal(SIGINT, sig_main);
 	signal(SIGQUIT, sig_quit);
-	sh->last_exit = WEXITSTATUS(sh->last_exit);
 }
 
 static void	exec_cmd(t_shell *sh, char *path, char **av, char **ev)
 {
+	int ex;
+
+	ex = sh->last_exit;
 	if (execve(path, av, ev) == -1)
 	{
 		write(1, "mini$hell37: execve: ", 21);
@@ -515,9 +524,12 @@ void execve_fct(t_shell *sh, t_cmd *cmd, char *path)
 		parent_code(sh, cmd, pid);
 	else
 	{
+
 		set_read_write_pipe(cmd);
+
 		av = create_argv(cmd->token);
 		ev = create_envp(sh->env);
+
 		exec_cmd(sh, path, av, ev);
 	}
 	free(path);
@@ -597,8 +609,6 @@ void executor(t_cmd *cmd, t_shell *sh)
 	char        *path;
 	struct stat buf;
 
-	write(1, sh->env->value, ft_strlen(sh->env->value));
-	write(1, "\n", 1);
 	while (cmd)
 	{
 		if (cmd->token && is_var_declaration(cmd->token->content))
@@ -621,7 +631,9 @@ void executor(t_cmd *cmd, t_shell *sh)
 				}
 			}
 			else
+			{
 				execve_fct(sh, cmd, path);
+			}
 		}
 		reset_fd(cmd);
 		cmd = cmd->next;
@@ -641,7 +653,7 @@ void	sig_cmd(int sig)
 {
 	if (sig == 2)
 	{
-		printf("\n");
+		write(1, "\n", 1);
 		rl_on_new_line();
 		rl_redisplay();
 	}
@@ -679,7 +691,6 @@ void	start_exec(t_shell *sh, char *input)
 	sh->cmd = NULL;
 	sh->line = input;
 	sh->cmd = parsing(sh->line, sh->env, &sh->last_exit);
-	free(sh->line);
 	if (input != NULL && sh->cmd)
 		executor(sh->cmd, sh);
 }

@@ -67,7 +67,7 @@ t_env 	*parser_env(char **envp)
 	while (envp[i])
 	{
 		ret = find_char(envp[i], '=');
-		new = env_new(ft_substr(envp[i] , '=', ret),
+		new = env_new(ft_substr(envp[i] , 0, ret),
 					  ft_substr(envp[i], ret + 1, ft_strlen(envp[i] + ret + 1)), 1);
 		envp_back(&env, new);
 		++i;
