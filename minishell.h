@@ -3,17 +3,17 @@
 
 #include "libft/libft.h"
 #include <stdio.h>
-#include <errno.h>
+#include <sys/errno.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
 #include <unistd.h>
-# include <sys/stat.h>
 #include <fcntl.h>
 # include <limits.h>
 # include <stddef.h>
-# include <sys/types.h>
-# include <sys/wait.h>
 
 //# define PRINT_ERROR_FD 2
 //# define DOUBLE_QUOTE 34 //""
@@ -30,6 +30,8 @@
 
 typedef struct      s_cmd
 {
+	char 			**argv;
+	char 			*name_file;
 	t_list          *token;
 	t_list          *file_in;
 	t_list          *file_out;

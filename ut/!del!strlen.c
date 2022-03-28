@@ -2,7 +2,7 @@
 int main()
 {
 	int i = 0;
-	char *str = "minishell: syntax error near unexpected token '|'\n";
+	char *str = "mini$hell37: execve: ";
 	while (str[i])
 		i++;
 	printf("%d\n", i);

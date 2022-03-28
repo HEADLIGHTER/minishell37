@@ -7,7 +7,7 @@ t_cmd *cmd_new(void)
 	new = malloc(sizeof (*new));
 	if (!new)
 	{
-		ft_putstr_fd("minishell: malloc:", 2);
+		ft_putstr_fd("mini$hell37: malloc:", 2);
 		ft_putstr_fd(strerror(ENOMEM), 2);
 		return (NULL);
 	}

@@ -22,7 +22,9 @@ t_env *env_new(char *key, char *vaulue, int set)
 
 	if (!(new = malloc(sizeof (*new))))
 	{
-		printf("minishell: malloc: %s\n", strerror(ENOMEM));
+		write(1, "mini$hell37: malloc: ", 21);
+		write(1,  strerror(ENOMEM), ft_strlen(strerror(ENOMEM)));
+		write(1, "\n", 1);
 		return (NULL);
 	}
 	new->key = key;
@@ -31,6 +33,8 @@ t_env *env_new(char *key, char *vaulue, int set)
 	new->next = NULL;
 	return (new);
 }
+
+
 
 void envp_back(t_env **old, t_env *new)
 {
