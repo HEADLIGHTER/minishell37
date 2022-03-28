@@ -7,6 +7,13 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include <unistd.h>
+# include <sys/stat.h>
+#include <fcntl.h>
+# include <limits.h>
+# include <stddef.h>
+# include <sys/types.h>
+# include <sys/wait.h>
 
 //# define PRINT_ERROR_FD 2
 //# define DOUBLE_QUOTE 34 //""
@@ -69,6 +76,7 @@ t_env *get_env(t_env *env, char *key);
 t_env *env_new(char *key, char *vaulue, int set);
 void envp_back(t_env **old, t_env *new);
 t_env 	*parser_env(char **envp);
+void env_value(t_env *env, char *new_value);
 //signal.c
 t_shell *get_shell(int flag);
 t_cnt       *init_cnt(void);
@@ -77,6 +85,8 @@ void split_cmd(char *line, t_cmd **cmd);
 t_cmd *parsing(char *line, t_env *envp, int *last_exit);
 //utils.c
 size_t  escaped(char *str, size_t i, char *sep);
+int     is_builtin(char *token);
+void	handel_built_in(t_shell *sh, t_cmd *cmd, t_list *tkn);
 // dollar.c
 void replacce(char **s, int i, char *l_e);
 static void env_search(char **s, int i, t_env *env);
@@ -91,5 +101,19 @@ void parser_special_char(t_cmd *cmd, char *s_char,
 void    cpy_no_quotes(char *s1, char *s2);
 void rm_quote(t_cmd *cmd);
 void rm_redirect_pipe(t_cmd *cmd);
+//cd.c
+static char *replace(t_env *env, char *path, int flag);
+static int cd_path(t_env *env, char *path, int flag);
+int built_in_cd(t_env *env, t_list *tkn);
+//echo.c
+int built_in_echo(t_list *tkn);
+//env.c
+int built_in_env(t_env *env);
+//pwd.c
+int built_in_pwd(void);
+// main.c
+int         is_var_declaration(char *str);
+// export.c
+int built_in_export(t_env *env, t_list *tkn);
 
 #endif

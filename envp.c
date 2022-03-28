@@ -63,10 +63,42 @@ t_env 	*parser_env(char **envp)
 	while (envp[i])
 	{
 		ret = find_char(envp[i], '=');
-		new = env_new(ft_substr(envp[i] , '=', ret),
+		new = env_new(ft_substr(envp[i] , 0, ret),
 					  ft_substr(envp[i], ret + 1, ft_strlen(envp[i] + ret + 1)), 1);
 		envp_back(&env, new);
 		++i;
 	}
+	if (!get_env(env, "SHLVL"))
+	{
+		new = env_new("SHLVL", "1", 1);
+		envp_back(&env, new);
+	}
+	else
+	{
+		new = get_env(env, "SHLVL");
+		i = ft_atoi(new->value) + 1;
+		if (i > 1000)
+		{
+			ft_putstr_fd("bash: warning: shell level (", 2);
+			ft_putstr_fd(new->value, 2);
+			ft_putstr_fd(") too high, resetting to 1\n", 2);
+			i = 1;
+		}
+		char *tmp = new->value;
+		new->value = ft_itoa(i);
+		free(tmp);
+	}
 	return (env);
+}
+
+void env_value(t_env *env, char *new_value)
+{
+	size_t i;
+
+	i = find_char(new_value, '=');
+	free(env->value);
+	if (new_value[i] == '=')
+		env->value = ft_substr(new_value, i + 1, ft_strlen(new_value + i + 1));
+	else
+		env->value = ft_strdup(new_value);
 }

@@ -5,6 +5,7 @@ void split_cmd(char *line, t_cmd **cmd)
 	size_t i;
 	size_t end;
 
+	i = 0;
 	while (ft_isspace(line[i]))
 		i++;
 	if (!line[i])
