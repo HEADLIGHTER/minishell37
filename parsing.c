@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/30 14:53:52 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/30 14:53:52 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void split_cmd(char *line, t_cmd **cmd)
+void	split_cmd(char *line, t_cmd **cmd)
 {
-	size_t i;
-	size_t end;
+	size_t	i;
+	size_t	end;
 
 	i = 0;
 	while (ft_isspace(line[i]))
@@ -22,9 +34,9 @@ void split_cmd(char *line, t_cmd **cmd)
 	}
 }
 
-t_cmd *parsing(char *line, t_env *envp, int *last_exit)
+t_cmd	*parsing(char *line, t_env *envp, int *last_exit)
 {
-	t_cmd *cmd;
+	t_cmd	*cmd;
 
 	if (!line)
 		return (NULL);

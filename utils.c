@@ -37,23 +37,6 @@ size_t	escaped(char *str, size_t i, char *sep)
 	return (i);
 }
 
-int     is_builtin(char *token)
-{
-	int         i;
-	static char *builtin[8] = {"cd", "echo", "env", "exit",
-							   "export", "pwd", "unset", NULL};
-
-	if (!token)
-		return (0);
-	i = 0;
-	while (builtin[i])
-	{
-		if (!ft_strncmp(token, builtin[i], ft_strlen(builtin[i]) + 1))
-			return (1);
-		++i;
-	}
-	return (0);
-}
 
 void	set_builtin_pipe(t_cmd *cmd)
 {
@@ -77,7 +60,7 @@ void	handel_built_in(t_shell *sh, t_cmd *cmd, t_list *tkn)
 	if (!ft_strncmp(tkn->content, "echo", 5))
 		sh->last_exit = built_in_echo(tkn->next);
 	else if (!ft_strncmp
-		(tkn->content, "cd", 3))
+			(tkn->content, "cd", 3))
 		sh->last_exit = built_in_cd(sh->env, tkn->next);
 	else if (!ft_strncmp(tkn->content, "pwd", 4))
 		sh->last_exit = built_in_pwd();

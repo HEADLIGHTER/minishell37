@@ -118,4 +118,56 @@ int         is_var_declaration(char *str);
 // export.c
 int built_in_export(t_env *env, t_list *tkn);
 
+//envworks
+static char	**create_envp(t_env *env);
+int			env_size(t_env *env);
+void		set_env_value(t_env *env, char *new_value);
+char		*get_bin(t_env *env, char *name);
+
+//erroren
+void		error_input(void);
+void		sig_quit(int sig);
+
+//executor
+static void	parent_code(t_shell *sh, t_cmd *cmd, pid_t pid);
+void		executor(t_cmd *cmd, t_shell *sh);
+void		execve_fct(t_shell *sh, t_cmd *cmd, char *path);
+
+//list
+void		ft_lstdelone(t_list *lst, void (*del)(void*));
+void		ft_lstclear(t_list **lst, void (*del)(void*));
+int			ft_lstsize(t_list *lst);
+
+//pipes
+void		set_read_write_pipe(t_cmd *cmd);
+void		set_builtin_pipe(t_cmd *cmd);
+void		set_cmd_pipe(t_cmd *cmd);
+
+//fdes
+static int	open_file(t_cmd *cmd, t_list *file, int std_fd);
+void		set_redirect_fd(t_cmd *cmd, int std_fd);
+void		open_fd(t_cmd *cmd);
+void		reset_fd(t_cmd *cmd);
+
+//free
+int			free_all(t_shell *sh);
+void		free_env(t_env *env);
+void		free_cmd(t_cmd *cmd);
+int			free_split(char **split);
+
+//sig
+void		sig_cmd(int sig);
+void		sig_child(int sig);
+void		sig_main(int sig);
+void		sig_quit(int sig);
+
+//utils37
+void		no_path(t_cmd *cmd, t_shell *sh);
+int			getenv_check(t_env *env, t_list *tkn);
+t_list		*f_in_out(t_cmd *cmd, int std_fd);
+void		f_copy_in_out(t_cmd *cmd, int std_fd);
+int			append(t_list *token, int ret);
+void		redir(t_list *token, int ret, t_cmd *cmd);
+int			check_input(char *input);
+
 #endif

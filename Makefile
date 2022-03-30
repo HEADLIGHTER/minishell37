@@ -7,7 +7,9 @@ LIBFT = ./libft/
 READLINE = -lreadline -L/usr/local/opt/readline/lib -I/usr/local/opt/readline/include
 HEADER = minishell.h
 
-SRCS = main.c cmd.c signal.c utils.c parser_special_char.c dollar.c clean.c envp.c parsing.c
+SRCS = minishell.c erroren.c sig.c cmd.c signal.c utils.c parser_special_char.c dollar.c \
+       		clean.c envp.c parsing.c cd.c pwd.c env.c export.c echo.c \
+       		executor.c listutils.c pipes.c fdes.c envworks.c execve.c freex.c msh_ut.c utils37.c p_utils.c
 OBJS = $(SRCS:.c=.o)
 
 

@@ -1,10 +1,22 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   clean.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/30 15:15:55 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/30 15:15:55 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void    cpy_no_quotes(char *s1, char *s2)
+void	cpy_no_quotes(char *s1, char *s2)
 {
-	int     i;
-	int     j;
-	int     flag;
+	int	i;
+	int	j;
+	int	flag;
 
 	i = -1;
 	j = 0;
@@ -26,18 +38,18 @@ void    cpy_no_quotes(char *s1, char *s2)
 	s2[j] = '\0';
 }
 
-void rm_quote(t_cmd *cmd)
+void	rm_quote(t_cmd *cmd)
 {
-	t_list  *tkn;
-	char    *str;
+	t_list	*tkn;
+	char	*str;
 
 	while (cmd)
 	{
 		tkn = cmd->token;
 		while (tkn)
 		{
-			if (tkn->content &&
-				(str = malloc(ft_strlen(tkn->content) + 1)))
+			str = malloc(ft_strlen(tkn->content) + 1);
+			if (tkn->content && str)
 			{
 				cpy_no_quotes(tkn->content, str);
 				free(tkn->content);
@@ -49,10 +61,10 @@ void rm_quote(t_cmd *cmd)
 	}
 }
 
-void rm_redirect_pipe(t_cmd *cmd)
+void	rm_redirect_pipe(t_cmd *cmd)
 {
-	t_list *curr;
-	t_list *prev;
+	t_list	*curr;
+	t_list	*prev;
 
 	while (cmd)
 	{

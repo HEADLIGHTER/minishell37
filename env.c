@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int built_in_env(t_env *env)
+int	built_in_env(t_env *env)
 {
 	while (env)
 	{
