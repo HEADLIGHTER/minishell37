@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cmd.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 00:35:45 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/31 00:35:45 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-t_cmd *cmd_new(void)
+t_cmd	*cmd_new(void)
 {
-	t_cmd *new;
+	t_cmd	*new;
 
 	new = malloc(sizeof (*new));
 	if (!new)
@@ -26,9 +38,10 @@ t_cmd *cmd_new(void)
 	new->next = NULL;
 	return (new);
 }
-t_cmd *cmd_last(t_cmd **cmd)
+
+t_cmd	*cmd_last(t_cmd **cmd)
 {
-	t_cmd *cur;
+	t_cmd	*cur;
 
 	if (!cmd || !*cmd)
 		return (NULL);
@@ -37,10 +50,11 @@ t_cmd *cmd_last(t_cmd **cmd)
 		cur = cur->next;
 	return (cur);
 }
-void tkn_back(t_cmd **begin, char *cntnt)
+
+void	tkn_back(t_cmd **begin, char *cntnt)
 {
-	t_list *new;
-	t_cmd *cmd;
+	t_list	*new;
+	t_cmd	*cmd;
 
 	new = ft_lstnew(cntnt);
 	if (!begin || !new)
@@ -52,10 +66,10 @@ void tkn_back(t_cmd **begin, char *cntnt)
 	ft_lstadd_back(&cmd->token, new);
 }
 
-void cmd_back(t_cmd **cmd, char *id)
+void	cmd_back(t_cmd **cmd, char *id)
 {
-	t_cmd *new;
-	t_cmd *cur;
+	t_cmd	*new;
+	t_cmd	*cur;
 
 	new = cmd_new();
 	if (!cmd || !new)
@@ -72,4 +86,3 @@ void cmd_back(t_cmd **cmd, char *id)
 	cur = cmd_last(cmd);
 	cur->next = new;
 }
-

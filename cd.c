@@ -20,7 +20,7 @@ static char	*replace(t_env *env, char *path, int flag)
 	tmp = get_env(env, "HOME");
 	if (!tmp)
 	{
-		write(2, "minishell: cd: HOME not set\n", 28);
+		write(2, "mini$hell37: cd: HOME not set\n", 30);
 		if (flag)
 			free(path);
 		return (NULL);
@@ -37,8 +37,12 @@ static int	cd_path(t_env *env, char *path, int flag)
 	t_env	*tmp;
 	t_env	*tmp_old;
 
-	if (path && path[0] == '~' && !(path = replace(env, path, flag)))
-		return (1);
+	if (path && path[0] == '~')
+	{
+		path = replace(env, path, flag);
+		if (!path)
+			return (1);
+	}
 	if (chdir(path) == -1)
 	{
 		ft_putstr_fd("mini$hell37: cd: ", 2);

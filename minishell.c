@@ -14,7 +14,7 @@
 
 int	print_free(t_shell *sh)
 {
-	write(2, "exit\n", 5);
+	write(1, "exit\n", 5);
 	free_env(sh->env);
 	return (1);
 }

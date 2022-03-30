@@ -41,11 +41,11 @@ void	set_redirect_fd(t_cmd *cmd, int std_fd)
 		fd = open_file(cmd, file, std_fd);
 		if (fd == -1)
 		{
-			write(1, "mini$hell37: ", 13);
-			write(1, (char *)file->content, ft_strlen((char *)file->content));
-			write(1, " ", 1);
-			write(1, strerror(errno), ft_strlen(strerror(errno)));
-			write(1, "\n", 1);
+			write(2, "mini$hell37: ", 13);
+			write(2, (char *)file->content, ft_strlen((char *)file->content));
+			write(2, " ", 1);
+			write(2, strerror(errno), ft_strlen(strerror(errno)));
+			write(2, "\n", 1);
 			cmd->std_in = -1;
 			return ;
 		}

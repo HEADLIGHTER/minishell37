@@ -1,6 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipes.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/30 23:24:01 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/30 23:24:01 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void    set_read_write_pipe(t_cmd *cmd)
+void	set_read_write_pipe(t_cmd *cmd)
 {
 	if (cmd->std_in != PIPE || cmd->std_out != STDOUT_FILENO)
 	{

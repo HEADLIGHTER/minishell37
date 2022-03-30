@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   dollar.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 00:42:22 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/31 00:42:22 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void replacce(char **s, int i, char *l_e)
+void	replacce(char **s, int i, char *l_e)
 {
-	size_t j;
-	char *s1;
-	char *s2;
-	char *s3;
+	size_t	j;
+	char	*s1;
+	char	*s2;
+	char	*s3;
 
 	s1 = ft_substr(*s, 0, i);
 	if (!l_e)
@@ -28,11 +40,11 @@ void replacce(char **s, int i, char *l_e)
 	free(s3);
 }
 
-static void env_search(char **s, int i, t_env *env)
+static void	env_search(char **s, int i, t_env *env)
 {
-	int j;
-	char *tmp;
-	t_env *tmp2;
+	int		j;
+	char	*tmp;
+	t_env	*tmp2;
 
 	if (ft_isdigit(*(*s + i + 1)))
 		j = 2;
@@ -51,10 +63,10 @@ static void env_search(char **s, int i, t_env *env)
 	free(tmp);
 }
 
-void env_logic(t_list *tkn, t_env *env, int i, int last_exit)
+void	env_logic(t_list *tkn, t_env *env, int i, int last_exit)
 {
-	char *str;
-	char *tmp;
+	char	*str;
+	char	*tmp;
 
 	str = tkn->content;
 	if (str[i + 1] == '?')
@@ -71,9 +83,9 @@ void env_logic(t_list *tkn, t_env *env, int i, int last_exit)
 
 void	parser_dollar(t_cmd *cmd, t_env *env, int last_exit)
 {
-	int i;
-	char *str;
-	t_list *tkn;
+	int		i;
+	char	*str;
+	t_list	*tkn;
 
 	while (cmd)
 	{
@@ -90,7 +102,7 @@ void	parser_dollar(t_cmd *cmd, t_env *env, int last_exit)
 				else if (str[i + 1] == '"')
 				{
 					ft_memmove(str + i, str + 1 + i,
-							   ft_strlen(str) - i - 1);
+						ft_strlen(str) - i - 1);
 					str[ft_strlen(str) - 1] = '\0';
 				}
 				else

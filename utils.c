@@ -37,7 +37,6 @@ size_t	escaped(char *str, size_t i, char *sep)
 	return (i);
 }
 
-
 void	set_builtin_pipe(t_cmd *cmd)
 {
 	if (cmd->std_in == PIPE)
@@ -59,8 +58,7 @@ void	handel_built_in(t_shell *sh, t_cmd *cmd, t_list *tkn)
 	set_builtin_pipe(cmd);
 	if (!ft_strncmp(tkn->content, "echo", 5))
 		sh->last_exit = built_in_echo(tkn->next);
-	else if (!ft_strncmp
-			(tkn->content, "cd", 3))
+	else if (!ft_strncmp(tkn->content, "cd", 3))
 		sh->last_exit = built_in_cd(sh->env, tkn->next);
 	else if (!ft_strncmp(tkn->content, "pwd", 4))
 		sh->last_exit = built_in_pwd();

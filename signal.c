@@ -1,30 +1,41 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 01:05:32 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/31 01:05:32 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-t_cnt       *init_cnt(void)
+t_cnt	*init_cnt(void)
 {
-	t_cnt *ret;
+	t_cnt	*ret;
 
-	if (!(ret = malloc(sizeof(*ret))))
+	ret = malloc(sizeof(*ret));
+	if (!ret)
 		return (NULL);
 	ret->s = 0;
 	ret->save = NULL;
 	return (ret);
 }
 
-t_shell *get_shell(int flag)
+t_shell	*get_shell(int flag)
 {
-	static t_shell *sh = NULL;
+	static t_shell	*sh;
 
+	sh = NULL;
 	if (flag == PULL)
 		return (sh);
 	else if (flag == INIT)
 	{
-		if (!(sh = malloc(sizeof(t_shell))))
+		sh = malloc(sizeof(t_shell));
+		if (!sh)
 			exit(EXIT_FAILURE);
-//		init_terminal(sh);
-		//sh->hst_path = NULL;
-//		sh->term_key = init_termcap();
-		//sh->spc = init_cnt();
 		sh->last_exit = 0;
 		return (sh);
 	}

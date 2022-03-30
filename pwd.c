@@ -1,13 +1,25 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pwd.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 00:43:28 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/31 00:43:28 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-int built_in_pwd(void)
+int	built_in_pwd(void)
 {
-	char *buf;
+	char	*buf;
 
 	buf = getcwd(NULL, 0);
 	if (!buf)
 	{
-		ft_putstr_fd("minishell: pwd:", 2);
+		ft_putstr_fd("mini$hell37: pwd:", 2);
 		ft_putstr_fd(strerror(errno), 2);
 		return (1);
 	}

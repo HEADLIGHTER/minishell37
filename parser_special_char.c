@@ -1,37 +1,63 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_special_char.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 00:33:30 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/31 00:33:30 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-void    parser_redirect(t_cmd *cmd, t_list *token, int ret)
+int	retapp(t_cmd *cmd)
 {
-	t_list **file;
+	if (cmd->append == 1)
+		return (2);
+	else
+		return (1);
+}
 
-	cmd->append = (((char *)token->content)[ret] == '>' &&
-				   ((char *)token->content)[ret + 1] == '>') ? 1 : 0;
-	(((char *)token->content)[ret] == '>') ? (cmd->std_out = REDIRECT)
-										   : (cmd->std_in = REDIRECT);
-	file = (((char *)token->content)[ret] == '>') ?
-		   &cmd->file_out : &cmd->file_in;
+t_list	**r_in_out(t_cmd *cmd, t_list *token, int ret)
+{
+	if (((char *)token->content)[ret] == '>')
+		return (&cmd->file_out);
+	else
+		return (&cmd->file_in);
+}
+
+void	parser_redirect(t_cmd *cmd, t_list *token, int ret)
+{
+	t_list	**file;
+
+	cmd->append = append(token, ret);
+	redir(token, ret, cmd);
+	file = r_in_out(cmd, token, ret);
 	if (!((char *)token->content)[ret + 1] ||
 		(((char *)token->content)[ret + 1] == '>' &&
-		 !((char *)token->content)[ret + 2]))
+		!((char *)token->content)[ret + 2]))
 	{
 		ft_lstadd_back(file, ft_lstnew(ft_strdup(token->next->content)));
 		ft_bzero(token->next->content + ret,
-				 ft_strlen(token->next->content + ret));
+			ft_strlen(token->next->content + ret));
 	}
 	else
 	{
-		ret += (cmd->append == 1) ? 2 : 1;
-		(((char *)token->content)[ret] == '>') ? ++ret : 0;
+		ret += retapp(cmd);
+		if (((char *)token->content)[ret] == '>')
+			++ret;
 		ft_lstadd_back(file, ft_lstnew(ft_substr(token->content, ret,
-												 ft_strlen(token->content + ret))));
-		ret -= (cmd->append == 1) ? 2 : 1;
+					ft_strlen(token->content + ret))));
+			ret -= retapp(cmd);
 	}
 	ft_bzero(token->content + ret, ft_strlen(token->content + ret));
 }
 
-void    parse_pipe(t_cmd *cmd, t_list *tkn, int i)
+void	parse_pipe(t_cmd *cmd, t_list *tkn, int i)
 {
-	t_cmd *new;
+	t_cmd	*new;
 
 	new = cmd_new();
 	if (!((char *)tkn->content)[i + 1])
@@ -45,7 +71,7 @@ void    parse_pipe(t_cmd *cmd, t_list *tkn, int i)
 	else
 	{
 		tkn_back(&new, ft_substr(tkn->content, i + 1,
-									 ft_strlen(tkn->content + i + 1)));
+				ft_strlen(tkn->content + i + 1)));
 		ft_bzero(tkn->content + i, ft_strlen(tkn->content + i));
 		new->token->next = tkn->next;
 	}
@@ -56,10 +82,11 @@ void    parse_pipe(t_cmd *cmd, t_list *tkn, int i)
 	cmd->std_out = PIPE;
 }
 
-void parser_special_char(t_cmd *cmd, char *s_char,  void (*found)(t_cmd *, t_list *, int))
+void	parser_special_char(t_cmd *cmd, char *s_char,
+							void (*found)(t_cmd *, t_list *, int))
 {
-	int i;
-	t_list *tkn;
+	int		i;
+	t_list	*tkn;
 
 	while (cmd)
 	{

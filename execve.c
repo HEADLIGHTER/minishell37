@@ -1,23 +1,37 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execve.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/30 23:45:05 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/30 23:45:05 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-static char **create_argv(t_list *tkn)
+static char	**create_argv(t_list *tkn)
 {
-	size_t  i;
-	size_t  len;
-	char    **argv;
+	size_t	i;
+	size_t	len;
+	char	**argv;
 
 	len = ft_lstsize(tkn);
-	if (!(argv = malloc(sizeof(*argv) * (len + 1))))
+	argv = malloc(sizeof(*argv) * (len + 1));
+	if (!argv)
 	{
 		write(2, "mini$hell37: malloc: ", 21);
-		write(2,  strerror(errno), ft_strlen(strerror(errno)));
+		write(2, strerror(errno), ft_strlen(strerror(errno)));
 		write(2, "\n", 1);
 		return (NULL);
 	}
 	i = 0;
 	while (i < len + 1 && tkn)
 	{
-		if (!(argv[i] = ft_strdup(tkn->content)))
+		argv[i] = ft_strdup(tkn->content);
+		if (!argv[i])
 			break ;
 		tkn = tkn->next;
 		++i;
@@ -26,23 +40,23 @@ static char **create_argv(t_list *tkn)
 	return (argv);
 }
 
-static char **create_envp(t_env *env)
+static char	**create_envp(t_env *env)
 {
-	int     i;
-	size_t  len;
-	char    **envp;
+	int		i;
+	size_t	len;
+	char	**envp;
 
-	if (!(envp = malloc(sizeof(*envp) * (env_size(env) + 1))))
+	envp = malloc(sizeof(*envp) * (env_size(env) + 1));
+	if (!envp)
 		return (NULL);
 	i = 0;
 	while (env)
 	{
 		len = ft_strlen(env->key) + ft_strlen(env->value) + 2;
-		if (!(envp[i] = malloc(len)))
+		envp[i] = malloc(len);
+		if (!envp[i])
 		{
-			write(1, "mini$hell37: malloc: ", 21);
-			write(1,  strerror(errno), ft_strlen(strerror(errno)));
-			write(1, "\n", 1);
+			mall_err(strerror(errno));
 			break ;
 		}
 		ft_bzero(envp[i], len);
@@ -55,14 +69,12 @@ static char **create_envp(t_env *env)
 	return (envp);
 }
 
-static void parent_code(t_shell *sh, t_cmd *cmd, pid_t pid)
+static void	parent_code(t_shell *sh, t_cmd *cmd, pid_t pid)
 {
 	set_cmd_pipe(cmd);
 	sig_child(pid);
-//	write(1, "mini$hell37: execve: ", 21);
 	signal(SIGINT, sig_child);
 	signal(SIGQUIT, sig_child);
-//	signal(SIGINT, SIG_DFL);
 	waitpid(pid, &sh->last_exit, 0);
 	signal(SIGINT, sig_main);
 	signal(SIGQUIT, sig_quit);
@@ -74,8 +86,8 @@ static void	exec_cmd(t_shell *sh, char *path, char **av, char **ev)
 	if (execve(path, av, ev) == -1)
 	{
 		write(2, "mini$hell37: execve: ", 21);
-		write(1, strerror(errno), ft_strlen(strerror(errno)));
-		write(1, "\n", 1);
+		write(2, strerror(errno), ft_strlen(strerror(errno)));
+		write(2, "\n", 1);
 		free(path);
 		free_split(av);
 		free_split(ev);
@@ -84,17 +96,18 @@ static void	exec_cmd(t_shell *sh, char *path, char **av, char **ev)
 	}
 }
 
-void execve_fct(t_shell *sh, t_cmd *cmd, char *path)
+void	execve_fct(t_shell *sh, t_cmd *cmd, char *path)
 {
-	pid_t   pid;
-	char    **ev;
-	char    **av;
+	pid_t	pid;
+	char	**ev;
+	char	**av;
 
-	if ((pid = fork()) == -1)
+	pid = fork();
+	if (pid == -1)
 	{
-		write(1, "mini$hell37: fork: ", 19);
-		write(1, strerror(errno), ft_strlen(strerror(errno)));
-		write(1, "\n", 1);
+		write(2, "mini$hell37: fork: ", 19);
+		write(2, strerror(errno), ft_strlen(strerror(errno)));
+		write(2, "\n", 1);
 	}
 	else if (pid > 0)
 		parent_code(sh, cmd, pid);

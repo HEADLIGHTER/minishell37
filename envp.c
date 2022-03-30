@@ -1,8 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   envp.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 00:48:45 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/31 00:48:45 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
-t_env *get_env(t_env *env, char *key)
+t_env	*get_env(t_env *env, char *key)
 {
-	size_t i;
+	size_t	i;
 
 	if (!env || !key)
 		return (NULL);
@@ -16,15 +28,16 @@ t_env *get_env(t_env *env, char *key)
 	return (NULL);
 }
 
-t_env *env_new(char *key, char *vaulue, int set)
+t_env	*env_new(char *key, char *vaulue, int set)
 {
-	t_env *new;
+	t_env	*new;
 
-	if (!(new = malloc(sizeof (*new))))
+	new = malloc(sizeof (*new));
+	if (!new)
 	{
-		write(1, "mini$hell37: malloc: ", 21);
-		write(1,  strerror(ENOMEM), ft_strlen(strerror(ENOMEM)));
-		write(1, "\n", 1);
+		write(2, "mini$hell37: malloc: ", 21);
+		write(2, strerror(ENOMEM), ft_strlen(strerror(ENOMEM)));
+		write(2, "\n", 1);
 		return (NULL);
 	}
 	new->key = key;
@@ -34,11 +47,9 @@ t_env *env_new(char *key, char *vaulue, int set)
 	return (new);
 }
 
-
-
-void envp_back(t_env **old, t_env *new)
+void	envp_back(t_env **old, t_env *new)
 {
-	t_env *tmp;
+	t_env	*tmp;
 
 	if (!old || !new)
 		return ;
@@ -55,20 +66,21 @@ void envp_back(t_env **old, t_env *new)
 	new->next = NULL;
 }
 
-t_env 	*parser_env(char **envp)
+t_env	*parser_env(char **envp)
 {
-	size_t i;
-	size_t ret;
-	t_env *env;
-	t_env *new;
+	size_t	i;
+	size_t	ret;
+	t_env	*env;
+	t_env	*new;
+	char	*tmp;
 
 	env = NULL;
 	i = 0;
 	while (envp[i])
 	{
 		ret = find_char(envp[i], '=');
-		new = env_new(ft_substr(envp[i] , 0, ret),
-					  ft_substr(envp[i], ret + 1, ft_strlen(envp[i] + ret + 1)), 1);
+		new = env_new(ft_substr(envp[i], 0, ret),
+				ft_substr(envp[i], ret + 1, ft_strlen(envp[i] + ret + 1)), 1);
 		envp_back(&env, new);
 		++i;
 	}
@@ -88,16 +100,16 @@ t_env 	*parser_env(char **envp)
 			ft_putstr_fd(") too high, resetting to 1\n", 2);
 			i = 1;
 		}
-		char *tmp = new->value;
+		tmp = new->value;
 		new->value = ft_itoa(i);
 		free(tmp);
 	}
 	return (env);
 }
 
-void env_value(t_env *env, char *new_value)
+void	env_value(t_env *env, char *new_value)
 {
-	size_t i;
+	size_t	i;
 
 	i = find_char(new_value, '=');
 	free(env->value);

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   envworks.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/30 23:28:22 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/30 23:28:22 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	set_env_value(t_env *env, char *new_value)
@@ -12,9 +24,9 @@ void	set_env_value(t_env *env, char *new_value)
 		env->value = ft_strdup(new_value);
 }
 
-int     env_size(t_env *env)
+int	env_size(t_env *env)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (env)
@@ -25,17 +37,18 @@ int     env_size(t_env *env)
 	return (i);
 }
 
-char    *get_bin(t_env *env, char *name)
+char	*get_bin(t_env *env, char *name)
 {
-	int         i;
-	char        **split;
-	char        *path;
-	char        *s;
-	struct stat buf;
+	int			i;
+	char		**split;
+	char		*path;
+	char		*s;
+	struct stat	buf;
 
 	if (stat(name, &buf) == 0 && buf.st_mode & S_IXUSR && !S_ISDIR(buf.st_mode))
 		return (ft_strdup(name));
-	if (!(env = get_env(env, "PATH")))
+	env = get_env(env, "PATH");
+	if (!env)
 		return (NULL);
 	i = -1;
 	path = NULL;

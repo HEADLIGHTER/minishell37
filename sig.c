@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sig.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/30 23:10:51 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/30 23:10:51 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 void	sig_cmd(int sig)
@@ -20,7 +32,6 @@ void	sig_main(int sig)
 	(void)sig;
 	sh = get_shell(PULL);
 	ft_putstr_fd("", 0);
-	//signal(SIGINT, sig_main);
 	free(sh->line);
 	sh->line = NULL;
 }
