@@ -74,6 +74,7 @@ t_env	*parser_env(char **envp)
 	t_env	*new;
 	char	*tmp;
 
+	tmp = NULL;
 	env = NULL;
 	i = 0;
 	while (envp[i])
@@ -84,26 +85,7 @@ t_env	*parser_env(char **envp)
 		envp_back(&env, new);
 		++i;
 	}
-	if (!get_env(env, "SHLVL"))
-	{
-		new = env_new("SHLVL", "1", 1);
-		envp_back(&env, new);
-	}
-	else
-	{
-		new = get_env(env, "SHLVL");
-		i = ft_atoi(new->value) + 1;
-		if (i > 1000)
-		{
-			ft_putstr_fd("bash: warning: shell level (", 2);
-			ft_putstr_fd(new->value, 2);
-			ft_putstr_fd(") too high, resetting to 1\n", 2);
-			i = 1;
-		}
-		tmp = new->value;
-		new->value = ft_itoa(i);
-		free(tmp);
-	}
+	sh_ut(env, new, i, tmp);
 	return (env);
 }
 

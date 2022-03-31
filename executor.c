@@ -80,7 +80,6 @@ void	parse_var_declaration(t_cmd *cmd, t_list **tk, t_env *env)
 void	executor(t_cmd *cmd, t_shell *sh)
 {
 	char		*path;
-	struct stat	buf;
 
 	while (cmd)
 	{

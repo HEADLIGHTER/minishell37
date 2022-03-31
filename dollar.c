@@ -81,37 +81,43 @@ void	env_logic(t_list *tkn, t_env *env, int i, int last_exit)
 		env_search((char **)&tkn->content, i, env);
 }
 
+void	dollar_ut(t_cmd *cmd, int i, t_env *env, int last_exit)
+{
+	t_list	*tkn;
+	char	*str;
+
+	tkn = cmd->token;
+	while (tkn)
+	{
+		str = (char *)tkn->content;
+		i = escaped(tkn->content, i, "$");
+		if (str[i])
+		{
+			if (!str[i + 1] || str[i + 1] == '$')
+				i++;
+			else if (str[i + 1] == '"')
+			{
+				ft_memmove(str + i, str + 1 + i,
+					ft_strlen(str) - i - 1);
+				str[ft_strlen(str) - 1] = '\0';
+			}
+			else
+				env_logic(tkn, env, i, last_exit);
+			continue ;
+		}
+		i = 0;
+		tkn = tkn->next;
+	}
+}
+
 void	parser_dollar(t_cmd *cmd, t_env *env, int last_exit)
 {
 	int		i;
-	char	*str;
-	t_list	*tkn;
 
 	while (cmd)
 	{
-		tkn = cmd->token;
 		i = 0;
-		while (tkn)
-		{
-			str = (char *)tkn->content;
-			i = escaped(tkn->content, i, "$");
-			if (str[i])
-			{
-				if (!str[i + 1] || str[i + 1] == '$')
-					i++;
-				else if (str[i + 1] == '"')
-				{
-					ft_memmove(str + i, str + 1 + i,
-						ft_strlen(str) - i - 1);
-					str[ft_strlen(str) - 1] = '\0';
-				}
-				else
-					env_logic(tkn, env, i, last_exit);
-				continue ;
-			}
-			i = 0;
-			tkn = tkn->next;
-		}
+		dollar_ut(cmd, i, env, last_exit);
 		cmd = cmd->next;
 	}
 }

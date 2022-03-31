@@ -37,15 +37,32 @@ int	env_size(t_env *env)
 	return (i);
 }
 
+int	statcheck2(char *path)
+{
+	struct stat	buf;
+
+	if (!stat(path, &buf) && buf.st_mode & S_IXUSR && !S_ISDIR(buf.st_mode))
+		return (1);
+	return (0);
+}
+
+int	statcheck(char *name)
+{
+	struct stat	buf;
+
+	if (stat(name, &buf) == 0 && buf.st_mode & S_IXUSR && !S_ISDIR(buf.st_mode))
+		return (1);
+	return (0);
+}
+
 char	*get_bin(t_env *env, char *name)
 {
 	int			i;
 	char		**split;
 	char		*path;
 	char		*s;
-	struct stat	buf;
 
-	if (stat(name, &buf) == 0 && buf.st_mode & S_IXUSR && !S_ISDIR(buf.st_mode))
+	if (statcheck(name))
 		return (ft_strdup(name));
 	env = get_env(env, "PATH");
 	if (!env)
@@ -58,7 +75,7 @@ char	*get_bin(t_env *env, char *name)
 		s = ft_strjoin(split[i], "/");
 		path = ft_strjoin(s, name);
 		free(s);
-		if (!stat(path, &buf) && buf.st_mode & S_IXUSR && !S_ISDIR(buf.st_mode))
+		if (statcheck2(path))
 			break ;
 		free(path);
 		path = NULL;

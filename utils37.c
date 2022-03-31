@@ -56,6 +56,6 @@ void	f_copy_in_out(t_cmd *cmd, int std_fd)
 void	mall_err(char *err)
 {
 	write(1, "mini$hell37: malloc: ", 21);
-	write(1, strerror(errno), ft_strlen(strerror(errno)));
+	write(1, err, ft_strlen(err));
 	write(1, "\n", 1);
 }

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   msh_ut.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: bbellatr <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/03/31 02:48:52 by bbellatr          #+#    #+#             */
+/*   Updated: 2022/03/31 02:48:52 by bbellatr         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	is_builtin(char *token)
@@ -41,4 +53,28 @@ int	check_input(char *input)
 		i++;
 	}
 	return (0);
+}
+
+void	sh_ut(t_env *env, t_env *new, size_t i, char *tmp)
+{
+	if (!get_env(env, "SHLVL"))
+	{
+		new = env_new("SHLVL", "1", 1);
+		envp_back(&env, new);
+	}
+	else
+	{
+		new = get_env(env, "SHLVL");
+		i = ft_atoi(new->value) + 1;
+		if (i > 1000)
+		{
+			ft_putstr_fd("bash: warning: shell level (", 2);
+			ft_putstr_fd(new->value, 2);
+			ft_putstr_fd(") too high, resetting to 1\n", 2);
+			i = 1;
+		}
+		tmp = new->value;
+		new->value = ft_itoa(i);
+		free(tmp);
+	}
 }

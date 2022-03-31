@@ -31,6 +31,23 @@ static char	*replace(t_env *env, char *path, int flag)
 	return (new);
 }
 
+int	nodir(char *path, char *error)
+{
+	ft_putstr_fd("mini$hell37: cd: ", 2);
+	ft_putstr_fd(path, 2);
+	ft_putstr_fd(" ", 2);
+	ft_putstr_fd(error, 2);
+	write(2, "\n", 1);
+	return (1);
+}
+
+int	nopwd(char *error)
+{
+	ft_putstr_fd("mini$hell37: getcwd:", 2);
+	ft_putstr_fd(error, 2);
+	return (1);
+}
+
 static int	cd_path(t_env *env, char *path, int flag)
 {
 	char	*pwd;
@@ -44,25 +61,14 @@ static int	cd_path(t_env *env, char *path, int flag)
 			return (1);
 	}
 	if (chdir(path) == -1)
-	{
-		ft_putstr_fd("mini$hell37: cd: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd(" ", 2);
-		ft_putstr_fd(strerror(errno), 2);
-		write(2, "\n", 1);
-		return (1);
-	}
+		return (nodir(path, strerror(errno)));
 	tmp = get_env(env, "PWD");
 	tmp_old = get_env(env, "OLDPWD");
 	if (tmp && tmp_old)
 		env_value(tmp_old, tmp->value);
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
-	{
-		ft_putstr_fd("mini$hell37: getcwd:", 2);
-		ft_putstr_fd(strerror(errno), 2);
-		return (1);
-	}
+		return (nopwd(strerror(errno)));
 	if (tmp)
 		env_value(tmp, pwd);
 	free(pwd);
