@@ -68,7 +68,7 @@ void	sh_ut(t_env *env, t_env *new, size_t i, char *tmp)
 		i = ft_atoi(new->value) + 1;
 		if (i > 1000)
 		{
-			ft_putstr_fd("bash: warning: shell level (", 2);
+			ft_putstr_fd("mini$hell37: warning: shell level (", 2);
 			ft_putstr_fd(new->value, 2);
 			ft_putstr_fd(") too high, resetting to 1\n", 2);
 			i = 1;
